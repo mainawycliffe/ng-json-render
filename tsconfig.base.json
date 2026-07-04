@@ -13,7 +13,11 @@
     "lib": ["es2020", "dom"],
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
-    "paths": {}
+    "paths": {
+      "@ng-json-render/core": ["./libs/core/src/index.ts"],
+      "@ng-json-render/primitives": ["./libs/primitives/src/index.ts"],
+      "@ng-json-render/core/testing": ["./libs/core/testing/src/index.ts"]
+    }
   },
   "exclude": ["node_modules", "tmp"]
 }
