@@ -18,7 +18,7 @@ interface NavLink {
         class="sticky top-0 z-20 border-b border-zinc-200 bg-white/80 backdrop-blur dark:border-zinc-800 dark:bg-zinc-900/80"
       >
         <div
-          class="mx-auto flex max-w-6xl items-center justify-between px-6 py-3"
+          class="mx-auto flex max-w-[1600px] items-center justify-between px-6 py-3"
         >
           <a routerLink="/" class="flex items-center gap-2 font-semibold">
             <span
@@ -32,7 +32,7 @@ interface NavLink {
               href="https://json-render.dev/docs"
               target="_blank"
               rel="noreferrer"
-              class="font-medium text-indigo-600 hover:underline dark:text-indigo-400"
+              class="hidden font-medium text-indigo-600 hover:underline sm:inline dark:text-indigo-400"
               >json-render docs</a
             >
             <a
@@ -44,11 +44,27 @@ interface NavLink {
             >
           </nav>
         </div>
+
+        <!-- Mobile nav: the sidebar is hidden below md. -->
+        <nav
+          class="flex gap-1 overflow-x-auto border-t border-zinc-200 px-4 py-2 text-sm md:hidden dark:border-zinc-800"
+        >
+          @for (link of nav; track link.path) {
+            <a
+              [routerLink]="link.path"
+              routerLinkActive="bg-indigo-50 text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-300"
+              [routerLinkActiveOptions]="{ exact: link.exact }"
+              class="shrink-0 rounded-lg px-3 py-1.5 font-medium whitespace-nowrap text-zinc-600 dark:text-zinc-400"
+            >
+              {{ link.label }}
+            </a>
+          }
+        </nav>
       </header>
 
-      <div class="mx-auto flex max-w-6xl gap-8 px-6 py-8">
-        <aside class="hidden w-52 shrink-0 md:block">
-          <nav class="sticky top-20 flex flex-col gap-1 text-sm">
+      <div class="mx-auto flex max-w-[1600px] gap-10 px-6 py-10 lg:px-10">
+        <aside class="hidden w-60 shrink-0 md:block">
+          <nav class="sticky top-24 flex flex-col gap-1 text-base">
             @for (link of nav; track link.path) {
               <a
                 [routerLink]="link.path"
@@ -73,6 +89,7 @@ interface NavLink {
 export class App {
   protected readonly nav: NavLink[] = [
     { path: '/', label: 'Overview', exact: true },
+    { path: '/start', label: 'Get started', exact: false },
     { path: '/dashboard', label: 'Dashboard', exact: false },
     { path: '/components', label: 'Components', exact: false },
     { path: '/custom', label: 'Custom components', exact: false },

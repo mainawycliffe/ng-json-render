@@ -33,7 +33,7 @@ import {
       </div>
     }
 
-    <div class="grid gap-4" [class.lg:grid-cols-2]="showCode()">
+    <div class="grid gap-4" [class.xl:grid-cols-2]="showCode()">
       <div
         class="rounded-xl border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900"
       >
@@ -46,7 +46,7 @@ import {
 
       @if (showCode()) {
         <pre
-          class="max-h-[420px] overflow-auto rounded-xl border border-zinc-200 bg-zinc-950 p-4 text-xs leading-relaxed text-zinc-100 dark:border-zinc-800"
+          class="max-h-[420px] overflow-auto rounded-xl border border-zinc-200 bg-zinc-950 p-4 text-sm leading-relaxed text-zinc-100 dark:border-zinc-800"
         ><code>{{ code() || json() }}</code></pre>
       }
     </div>

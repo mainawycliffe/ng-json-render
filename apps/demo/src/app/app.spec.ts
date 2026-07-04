@@ -23,6 +23,7 @@ describe('App shell', () => {
     );
     expect(navLabels).toEqual([
       'Overview',
+      'Get started',
       'Dashboard',
       'Components',
       'Custom components',

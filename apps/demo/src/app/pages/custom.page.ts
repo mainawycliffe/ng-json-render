@@ -9,7 +9,7 @@ const PRICING_SPEC: Spec = {
     root: { type: 'Stack', props: { gap: 20 }, children: ['plans', 'quote'] },
     plans: {
       type: 'Grid',
-      props: { columns: 3, gap: 16 },
+      props: { columns: 3, gap: 16, minItemWidth: 240 },
       children: ['free', 'pro', 'ent'],
     },
     free: {
@@ -106,7 +106,7 @@ export const registry = mergeRegistries(
 
     <h2 class="mt-10 mb-3 text-lg font-semibold">How it's built</h2>
     <pre
-      class="overflow-auto rounded-xl border border-zinc-200 bg-zinc-950 p-4 text-xs leading-relaxed text-zinc-100 dark:border-zinc-800"
+      class="overflow-auto rounded-xl border border-zinc-200 bg-zinc-950 p-4 text-sm leading-relaxed text-zinc-100 dark:border-zinc-800"
     ><code>{{ source }}</code></pre>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,

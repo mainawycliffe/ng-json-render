@@ -7,6 +7,11 @@
   color-scheme: light dark;
 }
 
+html {
+  /* Scale up every rem-based size (text + spacing) across the app. */
+  font-size: 18px;
+}
+
 html,
 body {
   height: 100%;

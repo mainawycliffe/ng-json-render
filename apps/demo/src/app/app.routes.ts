@@ -9,6 +9,12 @@ export const appRoutes: Route[] = [
       import('./pages/overview.page').then((m) => m.OverviewPage),
   },
   {
+    path: 'start',
+    title: 'ng-json-render · Get started',
+    loadComponent: () =>
+      import('./pages/getting-started.page').then((m) => m.GettingStartedPage),
+  },
+  {
     path: 'dashboard',
     title: 'ng-json-render · Dashboard',
     loadComponent: () =>
