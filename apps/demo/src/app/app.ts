@@ -27,9 +27,25 @@ import { DEMO_SPEC } from './demo-spec';
             >
             ng-json-render
           </div>
-          <span class="text-xs text-zinc-500 dark:text-zinc-400"
-            >Generative UI · rendered by Angular</span
-          >
+          <nav class="flex items-center gap-4 text-xs">
+            <span class="hidden text-zinc-500 sm:inline dark:text-zinc-400"
+              >Generative UI · rendered by Angular</span
+            >
+            <a
+              href="https://json-render.dev/docs"
+              target="_blank"
+              rel="noreferrer"
+              class="font-medium text-indigo-600 hover:underline dark:text-indigo-400"
+              >Docs</a
+            >
+            <a
+              href="https://github.com/vercel-labs/json-render"
+              target="_blank"
+              rel="noreferrer"
+              class="font-medium text-zinc-600 hover:underline dark:text-zinc-300"
+              >json-render</a
+            >
+          </nav>
         </div>
       </header>
 
