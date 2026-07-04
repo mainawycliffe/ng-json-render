@@ -4,7 +4,9 @@
 
 ng-json-render is the Angular adapter for [json-render](https://json-render.dev) (Vercel Labs). A developer defines a **catalog** of allowed components, an AI (or your server) emits a flat-tree JSON **spec**, and a **registry** maps each component type to a real Angular component that a **renderer** instantiates dynamically — safely and reactively.
 
-It's built on the framework-agnostic [`@json-render/core`](https://www.npmjs.com/package/@json-render/core) (catalog, spec, streaming, expression evaluation) and adds an idiomatic Angular layer: **signals, standalone components, zoneless change detection, dynamic component rendering, DI-based events, and Angular 21 Signal Forms**.
+It's built on the framework-agnostic [`@json-render/core`](https://www.npmjs.com/package/@json-render/core) (catalog, spec, streaming, expression evaluation) and adds an idiomatic Angular layer: **signals, standalone components, zoneless change detection, dynamic component rendering, DI-based events, and Signal Forms-compatible controls**.
+
+> **Angular compatibility:** `@ng-json-render/core` and `@ng-json-render/primitives` support **Angular 19, 20, 21, and 22** (peer range `>=19.0.0 <23.0.0`). This workspace runs on Angular 21.
 
 ```text
 ┌─────────────┐   JSON spec    ┌──────────────┐   registry    ┌────────────────────┐
@@ -53,7 +55,7 @@ export class App {
 
 - **Dynamic rendering** — a flat spec tree is instantiated with `ViewContainerRef.createComponent()`; children project into each component's `<ng-content>`.
 - **Granular reactivity** — structural changes rebuild the tree; state changes update individual nodes' inputs in place (no rebuild, no focus loss).
-- **Data binding** — the full `@json-render/core` expression language: `$state`, `$cond/$then/$else`, `$template`, directives, and **`$bindState` two-way binding** wired to Angular 21 **Signal Forms** `model()` controls.
+- **Data binding** — the full `@json-render/core` expression language: `$state`, `$cond/$then/$else`, `$template`, directives, and **`$bindState` two-way binding** to `model()` form controls (structurally **Signal Forms**-compatible on Angular 21).
 - **Actions** — components raise events via injected `JR_CONTEXT`; routed to handlers registered through `provideJsonRender({ actions })` and surfaced on the renderer's `(action)` output.
 - **Batteries included** — layout (Container, Stack, Grid, Card, Divider), content (Heading, Text, Badge, Stat), feedback (Alert, Progress), data-viz (**BarChart, LineChart, Table** — no chart deps), and forms (Input, Textarea, Select, Checkbox, Switch, Button).
 - **Publishable** — both libraries build with ng-packagr (partial compilation), ship correct `exports`/peer deps, and release via `nx release`.
@@ -62,12 +64,12 @@ export class App {
 
 Any standalone Angular component can be a catalog component — there's no base class to extend and no decorator to add. The renderer wires four things into it:
 
-| Concern | How | Notes |
+| Concern | How | Notes | 
 | --- | --- | --- |
 | **Props** | discrete `input()` / `model()` | resolved from the element's `props`, re-applied when bound state changes |
 | **Children** | `<ng-content />` | the element's `children` are projected in order |
 | **Events** | `inject(JR_CONTEXT).emit(name, payload)` | routed to the element's `on` bindings and action handlers |
-| **Two-way state** | `model()` + `$bindState` | any Signal Forms `FormValueControl` / `FormCheckboxControl` binds automatically |
+| **Two-way state** | `model()` + `$bindState` | any control exposing a `value`/`checked` `model()` binds automatically (Signal Forms-compatible on Angular 21) |
 
 ### 1. A display component (props + children)
 
@@ -115,20 +117,21 @@ export class MyButton {
 
 ### 3. A form control (two-way `$bindState`)
 
-Implement Angular 21's `FormValueControl<T>` (a `value` model) or `FormCheckboxControl` (a `checked` model). It works with the native `[field]` directive **and** two-way binds to state when a prop uses `$bindState` — no extra wiring.
+Expose the editable value as a `value` `model()` (or `checked` for checkboxes). That's all the renderer needs to two-way bind a `$bindState` prop — no extra wiring. Because the shape matches Angular's Signal Forms `FormValueControl<T>` / `FormCheckboxControl` structurally, the same control also works with the native `[field]` directive on Angular 21.
 
 ```ts
 import { Component, model } from '@angular/core';
-import type { FormValueControl } from '@angular/forms/signals';
 
 @Component({
   selector: 'my-input',
   template: `<input [value]="value()" (input)="value.set($any($event.target).value)" />`,
 })
-export class MyInput implements FormValueControl<string> {
-  readonly value = model('');
+export class MyInput {
+  readonly value = model(''); // structurally a Signal Forms FormValueControl<string>
 }
 ```
+
+> Want the compile-time contract on Angular 21? Add `implements FormValueControl<string>` with `import type { FormValueControl } from '@angular/forms/signals'` — but that pins the component to Angular 21, so the bundled primitives keep it implicit to stay 19+.
 
 ```jsonc
 { "type": "Input", "props": { "value": { "$bindState": "/user/email" } } }
@@ -249,9 +252,28 @@ pnpm exec nx build core                 # build a publishable package
 pnpm exec nx release publish --dry-run  # verify publishing
 ```
 
-**Stack:** Nx 23 · Angular 21 (standalone, zoneless, signals) · pnpm · Vitest · Tailwind v4 · `@json-render/core`.
+**Stack:** Nx 23 · Angular 19–22 supported (workspace on 21; standalone, zoneless, signals) · pnpm · Vitest · Tailwind v4 · `@json-render/core`.
 
 > Adding a new library mid-session? The Angular Language Server caches `tsconfig` path aliases — run **"TypeScript: Restart TS Server"** in your editor if a new `@ng-json-render/*` import shows as unresolved. (Builds are unaffected.)
+
+## Publishing
+
+Both libraries are publishable Angular packages (ng-packagr, partial compilation) with `publishConfig.access: public`, released via [Nx Release](https://nx.dev/features/manage-releases):
+
+```sh
+# Bump versions → changelog → publish (interactive)
+pnpm exec nx release
+
+# Or step by step
+pnpm exec nx release version 0.1.0
+pnpm exec nx release publish --dry-run   # verify first
+pnpm exec nx release publish
+
+# Test end-to-end against a local registry (no npm)
+pnpm exec nx local-registry              # starts Verdaccio on :4873
+```
+
+`@ng-json-render/primitives` depends on `@ng-json-render/core`, so publish core first (or as one release group) and keep versions aligned. Consumers install the `@json-render/core` peer alongside.
 
 ## Status & roadmap
 

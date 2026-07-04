@@ -17,8 +17,8 @@ interface Step {
     <div class="mb-8 max-w-2xl">
       <h1 class="text-2xl font-semibold tracking-tight">Get started</h1>
       <p class="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
-        Render a JSON spec into native Angular components in four steps. Targets
-        Angular 21+ (standalone, signals, zoneless).
+        Render a JSON spec into native Angular components in four steps. Works
+        with Angular 19 through 22 (standalone, signals, zoneless).
       </p>
     </div>
 

@@ -6,11 +6,12 @@ import {
   input,
   model,
 } from '@angular/core';
-import type {
-  FormCheckboxControl,
-  FormValueControl,
-} from '@angular/forms/signals';
 import { JR_CONTEXT } from '@ng-json-render/core';
+
+// Note: these controls expose a `value` / `checked` model(), which *structurally*
+// satisfies Angular's Signal Forms `FormValueControl` / `FormCheckboxControl`
+// contracts — so on Angular 21 they work with the `[field]` directive — without
+// importing `@angular/forms/signals`, keeping the package usable on Angular 19+.
 
 const FIELD_LABEL =
   'text-sm font-medium text-zinc-700 dark:text-zinc-300';
@@ -18,7 +19,7 @@ const CONTROL =
   'w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 shadow-sm outline-none placeholder:text-zinc-400 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/30 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100';
 
 /**
- * Text input. A Signal Forms {@link FormValueControl} — usable with the `[field]`
+ * Text input. A Signal Forms Signal Forms value control — usable with the `[field]`
  * directive, or driven by `$bindState` through the renderer.
  */
 @Component({
@@ -45,7 +46,7 @@ const CONTROL =
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'block' },
 })
-export class JrInput implements FormValueControl<string> {
+export class JrInput {
   readonly value = model('');
   readonly label = input<string>();
   readonly placeholder = input('');
@@ -58,7 +59,7 @@ export class JrInput implements FormValueControl<string> {
   }
 }
 
-/** Multi-line text input ({@link FormValueControl}). */
+/** Multi-line text input (Signal Forms value control). */
 @Component({
   selector: 'jr-textarea',
   template: `
@@ -78,7 +79,7 @@ export class JrInput implements FormValueControl<string> {
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'block' },
 })
-export class JrTextarea implements FormValueControl<string> {
+export class JrTextarea {
   readonly value = model('');
   readonly label = input<string>();
   readonly placeholder = input('');
@@ -93,7 +94,7 @@ export class JrTextarea implements FormValueControl<string> {
 /** An option for {@link JrSelect}. */
 export type JrSelectOption = string | { value: string; label?: string };
 
-/** Dropdown select ({@link FormValueControl}). */
+/** Dropdown select (Signal Forms value control). */
 @Component({
   selector: 'jr-select',
   template: `
@@ -118,7 +119,7 @@ export type JrSelectOption = string | { value: string; label?: string };
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'block' },
 })
-export class JrSelect implements FormValueControl<string> {
+export class JrSelect {
   readonly value = model('');
   readonly label = input<string>();
   readonly placeholder = input<string>();
@@ -137,7 +138,7 @@ export class JrSelect implements FormValueControl<string> {
   }
 }
 
-/** Checkbox ({@link FormCheckboxControl}). */
+/** Checkbox (Signal Forms checkbox control). */
 @Component({
   selector: 'jr-checkbox',
   template: `
@@ -156,7 +157,7 @@ export class JrSelect implements FormValueControl<string> {
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'block' },
 })
-export class JrCheckbox implements FormCheckboxControl {
+export class JrCheckbox {
   readonly checked = model(false);
   readonly label = input('');
   protected read(e: Event): boolean {
@@ -164,7 +165,7 @@ export class JrCheckbox implements FormCheckboxControl {
   }
 }
 
-/** Toggle switch ({@link FormCheckboxControl}). */
+/** Toggle switch (Signal Forms checkbox control). */
 @Component({
   selector: 'jr-switch',
   template: `
@@ -193,7 +194,7 @@ export class JrCheckbox implements FormCheckboxControl {
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'block' },
 })
-export class JrSwitch implements FormCheckboxControl {
+export class JrSwitch {
   readonly checked = model(false);
   readonly label = input('');
 }
