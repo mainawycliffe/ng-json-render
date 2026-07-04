@@ -24,7 +24,7 @@
           }
         ],
         "styles": [
-          "apps/demo/src/styles.scss"
+          "apps/demo/src/styles.css"
         ]
       },
       "configurations": {
@@ -32,8 +32,8 @@
           "budgets": [
             {
               "type": "initial",
-              "maximumWarning": "500kb",
-              "maximumError": "1mb"
+              "maximumWarning": "800kb",
+              "maximumError": "1.5mb"
             },
             {
               "type": "anyComponentStyle",

@@ -1,0 +1,13 @@
+@import 'tailwindcss';
+
+/* Scan the primitives library source for the utility classes used in templates. */
+@source '../../../libs/primitives/src/**/*.ts';
+
+:root {
+  color-scheme: light dark;
+}
+
+html,
+body {
+  height: 100%;
+}
