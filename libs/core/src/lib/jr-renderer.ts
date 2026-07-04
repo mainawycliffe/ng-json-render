@@ -5,7 +5,6 @@ import {
   type EffectRef,
   EnvironmentInjector,
   Injector,
-  type Type,
   ViewContainerRef,
   effect,
   inject,
