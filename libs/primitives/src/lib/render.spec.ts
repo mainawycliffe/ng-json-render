@@ -44,10 +44,12 @@ describe('primitive rendering', () => {
     expect(el.style.gap).toBe('24px');
   });
 
-  it('Grid sets template columns', () => {
+  it('Grid sets a responsive template for its column count', () => {
     const { el } = render('Grid', { columns: 3 });
     expect(el.style.display).toBe('grid');
-    expect(el.style.gridTemplateColumns).toContain('repeat(3');
+    // Responsive: auto-fit tracks that collapse below a min width, targeting 3 columns.
+    expect(el.style.gridTemplateColumns).toContain('auto-fit');
+    expect(el.style.gridTemplateColumns).toContain('/ 3');
   });
 
   it('Card shows title, subtitle, and projects children', () => {
