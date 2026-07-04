@@ -1,0 +1,11 @@
+{
+  "name": "@ng-json-render/core",
+  "version": "0.0.1",
+  "description": "Angular renderer for json-render — safely render AI-agent-generated & server-driven UIs from a JSON spec.",
+  "license": "MIT",
+  "peerDependencies": {
+    "@angular/core": "^21.2.0",
+    "@json-render/core": "^0.19.0"
+  },
+  "sideEffects": false
+}
