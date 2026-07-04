@@ -2,6 +2,8 @@
 
 **Render AI-agent-generated & server-driven UIs from a JSON spec into native Angular components.** No iframes, no `eval`.
 
+📖 **Docs & live demo:** [mainawycliffe.github.io/ng-json-render](https://mainawycliffe.github.io/ng-json-render/)
+
 ng-json-render is the Angular adapter for [json-render](https://json-render.dev) (Vercel Labs). A developer defines a **catalog** of allowed components, an AI (or your server) emits a flat-tree JSON **spec**, and a **registry** maps each component type to a real Angular component that a **renderer** instantiates dynamically — safely and reactively.
 
 It's built on the framework-agnostic [`@json-render/core`](https://www.npmjs.com/package/@json-render/core) (catalog, spec, streaming, expression evaluation) and adds an idiomatic Angular layer: **signals, standalone components, zoneless change detection, dynamic component rendering, DI-based events, and Signal Forms-compatible controls**.
@@ -275,6 +277,12 @@ pnpm exec nx local-registry              # starts Verdaccio on :4873
 
 `@ng-json-render/primitives` depends on `@ng-json-render/core`, so publish core first (or as one release group) and keep versions aligned. Consumers install the `@json-render/core` peer alongside.
 
+## Docs site
+
+The demo doubles as the docs site and deploys to GitHub Pages via [`.github/workflows/deploy-docs.yml`](.github/workflows/deploy-docs.yml) on every push to `main`. It builds the SPA with `--base-href=/ng-json-render/`, adds a `404.html` fallback for client-side routes, and publishes with `actions/deploy-pages`.
+
+**One-time setup:** repo **Settings → Pages → Source: “GitHub Actions.”** The site then lives at [mainawycliffe.github.io/ng-json-render](https://mainawycliffe.github.io/ng-json-render/).
+
 ## Status & roadmap
 
 Implemented: the renderer engine, granular reactivity, data binding, actions, two-way Signal Forms binding, a ~19-component Tailwind catalog with charts, and a full dashboard demo.
@@ -283,4 +291,4 @@ Planned: streaming (`createSpecStreamCompiler` → signal, `injectUiStream()`) f
 
 ## License
 
-MIT
+[MIT](LICENSE) © Maina Wycliffe
