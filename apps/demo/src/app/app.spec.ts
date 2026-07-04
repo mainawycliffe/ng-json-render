@@ -1,30 +1,31 @@
+import { provideRouter } from '@angular/router';
 import { TestBed } from '@angular/core/testing';
 import { App } from './app';
+import { appRoutes } from './app.routes';
 
-describe('App', () => {
+describe('App shell', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [App],
+      providers: [provideRouter(appRoutes)],
     }).compileComponents();
   });
 
-  it('renders the dashboard spec into live components', async () => {
+  it('renders the brand and sidebar navigation', async () => {
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
     await fixture.whenStable();
-    const compiled = fixture.nativeElement as HTMLElement;
+    const el = fixture.nativeElement as HTMLElement;
 
-    // Heading from the spec.
-    expect(compiled.querySelector('jr-heading')?.textContent).toContain(
-      'Analytics',
+    expect(el.textContent).toContain('ng-json-render');
+    const navLabels = Array.from(el.querySelectorAll('aside a')).map((a) =>
+      a.textContent?.trim(),
     );
-    // Data-viz + table rendered dynamically.
-    expect(compiled.querySelector('table')).toBeTruthy();
-    expect(compiled.querySelectorAll('svg').length).toBeGreaterThan(0);
-    // The settings form's Save button.
-    const buttons = Array.from(compiled.querySelectorAll('button'));
-    expect(buttons.some((b) => b.textContent?.includes('Save changes'))).toBe(
-      true,
-    );
+    expect(navLabels).toEqual([
+      'Overview',
+      'Dashboard',
+      'Components',
+      'Custom components',
+    ]);
   });
 });
