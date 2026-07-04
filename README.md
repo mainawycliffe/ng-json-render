@@ -1,101 +1,106 @@
-# NgJsonRender
+# ng-json-render
 
-<a alt="Nx logo" href="https://nx.dev" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png" width="45"></a>
+**Render AI-agent-generated & server-driven UIs from a JSON spec into native Angular components.** No iframes, no `eval`.
 
-✨ Your new, shiny [Nx workspace](https://nx.dev) is ready ✨.
+ng-json-render is the Angular adapter for [json-render](https://json-render.dev) (Vercel Labs). A developer defines a **catalog** of allowed components, an AI (or your server) emits a flat-tree JSON **spec**, and a **registry** maps each component type to a real Angular component that a **renderer** instantiates dynamically — safely and reactively.
 
-[Learn more about this workspace setup and its capabilities](https://nx.dev/getting-started/tutorials/angular-monorepo-tutorial?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects) or run `npx nx graph` to visually explore what was created. Now, let's get you up to speed!
+It's built on the framework-agnostic [`@json-render/core`](https://www.npmjs.com/package/@json-render/core) (catalog, spec, streaming, expression evaluation) and adds an idiomatic Angular layer: **signals, standalone components, zoneless change detection, dynamic component rendering, DI-based events, and Angular 21 Signal Forms**.
 
-## Run tasks
-
-To run the dev server for your app, use:
-
-```sh
-npx nx serve demo
+```text
+┌─────────────┐   JSON spec    ┌──────────────┐   registry    ┌────────────────────┐
+│  AI / server │ ────────────▶ │  <jr-renderer>│ ───────────▶ │ native Angular DOM │
+└─────────────┘  {root,elements} └──────────────┘  type→class  └────────────────────┘
 ```
 
-To create a production bundle:
+## Packages
 
-```sh
-npx nx build demo
+| Package | Description |
+| --- | --- |
+| [`@ng-json-render/core`](libs/core) | The rendering engine: `JrRenderer`, `defineRegistry`, `provideJsonRender`, `JR_CONTEXT`, state store, `$bindState` two-way binding. Publishable. |
+| [`@ng-json-render/core/testing`](libs/core/testing) | A `renderSpec()` TestBed harness (secondary entry point). |
+| [`@ng-json-render/primitives`](libs/primitives) | ~19 Tailwind-styled components: layout, content, feedback, **charts/table**, and **Signal Forms** controls. Publishable. |
+| [`apps/demo`](apps/demo) | An analytics dashboard rendered entirely from one spec. |
+
+## Quick start
+
+```ts
+import { Component, signal } from '@angular/core';
+import { JrRenderer, type Spec } from '@ng-json-render/core';
+import { primitivesRegistry } from '@ng-json-render/primitives';
+
+@Component({
+  selector: 'app-root',
+  imports: [JrRenderer],
+  template: `<jr-renderer [spec]="spec()" [registry]="registry" (action)="onAction($event)" />`,
+})
+export class App {
+  registry = primitivesRegistry;
+  spec = signal<Spec>({
+    root: 'root',
+    state: { name: 'Ada' },
+    elements: {
+      root: { type: 'Stack', props: { gap: 16 }, children: ['title', 'field', 'save'] },
+      title: { type: 'Heading', props: { value: 'Hello', level: 1 } },
+      field: { type: 'Input', props: { label: 'Name', value: { $bindState: '/name' } } },
+      save:  { type: 'Button', props: { label: 'Save' }, on: { press: { action: 'save' } } },
+    },
+  });
+  onAction(e) { console.log(e.action, e.nodeId); }
+}
 ```
 
-To see all available targets to run for a project, run:
+## Features
 
-```sh
-npx nx show project demo
+- **Dynamic rendering** — a flat spec tree is instantiated with `ViewContainerRef.createComponent()`; children project into each component's `<ng-content>`.
+- **Granular reactivity** — structural changes rebuild the tree; state changes update individual nodes' inputs in place (no rebuild, no focus loss).
+- **Data binding** — the full `@json-render/core` expression language: `$state`, `$cond/$then/$else`, `$template`, directives, and **`$bindState` two-way binding** wired to Angular 21 **Signal Forms** `model()` controls.
+- **Actions** — components raise events via injected `JR_CONTEXT`; routed to handlers registered through `provideJsonRender({ actions })` and surfaced on the renderer's `(action)` output.
+- **Batteries included** — layout (Container, Stack, Grid, Card, Divider), content (Heading, Text, Badge, Stat), feedback (Alert, Progress), data-viz (**BarChart, LineChart, Table** — no chart deps), and forms (Input, Textarea, Select, Checkbox, Switch, Button).
+- **Publishable** — both libraries build with ng-packagr (partial compilation), ship correct `exports`/peer deps, and release via `nx release`.
+
+## Authoring your own components
+
+A catalog component is a standard standalone component. Props map to discrete `input()`s, children go through `<ng-content>`, and events use the injected `JR_CONTEXT`:
+
+```ts
+import { Component, inject, input } from '@angular/core';
+import { JR_CONTEXT } from '@ng-json-render/core';
+
+@Component({
+  selector: 'my-button',
+  template: `<button (click)="ctx.emit('press')">{{ label() }}<ng-content /></button>`,
+})
+export class MyButton {
+  label = input('');
+  protected ctx = inject(JR_CONTEXT);
+}
 ```
 
-These targets are either [inferred automatically](https://nx.dev/concepts/inferred-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) or defined in the `project.json` or `package.json` files.
+Register it: `defineRegistry({ Button: MyButton })`. Form controls that implement Signal Forms' `FormValueControl<T>` / `FormCheckboxControl` get two-way `$bindState` support automatically.
 
-[More about running tasks in the docs &raquo;](https://nx.dev/features/run-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+## Development
 
-## Add new projects
-
-While you could add new projects to your workspace manually, you might want to leverage [Nx plugins](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) and their [code generation](https://nx.dev/features/generate-code?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) feature.
-
-Use the plugin's generator to create new projects.
-
-To generate a new application, use:
+Everything runs through Nx.
 
 ```sh
-npx nx g @nx/angular:app demo
+pnpm install
+
+pnpm exec nx serve demo                 # run the dashboard demo
+pnpm exec nx run-many -t lint test build # lint, test, build all projects
+pnpm exec nx build core                 # build a publishable package
+pnpm exec nx release publish --dry-run  # verify publishing
 ```
 
-To generate a new library, use:
+**Stack:** Nx 23 · Angular 21 (standalone, zoneless, signals) · pnpm · Vitest · Tailwind v4 · `@json-render/core`.
 
-```sh
-npx nx g @nx/angular:lib mylib
-```
+> Adding a new library mid-session? The Angular Language Server caches `tsconfig` path aliases — run **"TypeScript: Restart TS Server"** in your editor if a new `@ng-json-render/*` import shows as unresolved. (Builds are unaffected.)
 
-You can use `npx nx list` to get a list of installed plugins. Then, run `npx nx list <plugin-name>` to learn about more specific capabilities of a particular plugin. Alternatively, [install Nx Console](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) to browse plugins and generators in your IDE.
+## Status & roadmap
 
-[Learn more about Nx plugins &raquo;](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) | [Browse the plugin registry &raquo;](https://nx.dev/plugin-registry?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+Implemented: the renderer engine, granular reactivity, data binding, actions, two-way Signal Forms binding, a ~19-component Tailwind catalog with charts, and a full dashboard demo.
 
-## Set up CI!
+Planned: streaming (`createSpecStreamCompiler` → signal, `injectUiStream()`) for token-by-token generative UI, `$item/$index` repeat, catalog-driven validators, a broader/shadcn catalog, and AI SDK integration.
 
-### Step 1
+## License
 
-To connect to Nx Cloud, run the following command:
-
-```sh
-npx nx connect
-```
-
-Connecting to Nx Cloud ensures a [fast and scalable CI](https://nx.dev/ci/intro/why-nx-cloud?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) pipeline. It includes features such as:
-
-- [Remote caching](https://nx.dev/ci/features/remote-cache?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Task distribution across multiple machines](https://nx.dev/ci/features/distribute-task-execution?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Automated e2e test splitting](https://nx.dev/ci/features/split-e2e-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Task flakiness detection and rerunning](https://nx.dev/ci/features/flaky-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-### Step 2
-
-Use the following command to configure a CI workflow for your workspace:
-
-```sh
-npx nx g ci-workflow
-```
-
-[Learn more about Nx on CI](https://nx.dev/ci/intro/ci-with-nx#ready-get-started-with-your-provider?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-## Install Nx Console
-
-Nx Console is an editor extension that enriches your developer experience. It lets you run tasks, generate code, and improves code autocompletion in your IDE. It is available for VSCode and IntelliJ.
-
-[Install Nx Console &raquo;](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-## Useful links
-
-Learn more:
-
-- [Learn more about this workspace setup](https://nx.dev/getting-started/tutorials/angular-monorepo-tutorial?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects)
-- [Learn about Nx on CI](https://nx.dev/ci/intro/ci-with-nx?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Releasing Packages with Nx release](https://nx.dev/features/manage-releases?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [What are Nx plugins?](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-And join the Nx community:
-- [Discord](https://go.nx.dev/community)
-- [Follow us on X](https://twitter.com/nxdevtools) or [LinkedIn](https://www.linkedin.com/company/nrwl)
-- [Our Youtube channel](https://www.youtube.com/@nxdevtools)
-- [Our blog](https://nx.dev/blog?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+MIT
