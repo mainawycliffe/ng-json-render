@@ -1,0 +1,12 @@
+{
+  "name": "@ng-json-render/primitives",
+  "version": "0.0.1",
+  "description": "Starter primitive component catalog (Tailwind + Signal Forms) for @ng-json-render/core.",
+  "license": "MIT",
+  "peerDependencies": {
+    "@angular/core": "^21.2.0",
+    "@angular/forms": "^21.2.0",
+    "@ng-json-render/core": "^0.0.1"
+  },
+  "sideEffects": false
+}
