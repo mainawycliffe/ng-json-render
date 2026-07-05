@@ -3,6 +3,30 @@
   "version": "0.0.1",
   "description": "Angular renderer for json-render — safely render AI-agent-generated & server-driven UIs from a JSON spec.",
   "license": "MIT",
+  "author": "Maina Wycliffe (https://github.com/mainawycliffe)",
+  "homepage": "https://mainawycliffe.github.io/ng-json-render/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mainawycliffe/ng-json-render.git",
+    "directory": "libs/core"
+  },
+  "bugs": {
+    "url": "https://github.com/mainawycliffe/ng-json-render/issues"
+  },
+  "keywords": [
+    "angular",
+    "json-render",
+    "generative-ui",
+    "server-driven-ui",
+    "ai",
+    "agent",
+    "renderer",
+    "dynamic-components",
+    "signals",
+    "standalone",
+    "zoneless",
+    "spec"
+  ],
   "peerDependencies": {
     "@angular/core": ">=19.0.0 <23.0.0",
     "@json-render/core": "^0.19.0"

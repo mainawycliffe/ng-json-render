@@ -3,6 +3,28 @@
   "version": "0.0.1",
   "description": "Starter primitive component catalog (Tailwind + Signal Forms-compatible controls) for @ng-json-render/core.",
   "license": "MIT",
+  "author": "Maina Wycliffe (https://github.com/mainawycliffe)",
+  "homepage": "https://mainawycliffe.github.io/ng-json-render/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mainawycliffe/ng-json-render.git",
+    "directory": "libs/primitives"
+  },
+  "bugs": {
+    "url": "https://github.com/mainawycliffe/ng-json-render/issues"
+  },
+  "keywords": [
+    "angular",
+    "json-render",
+    "generative-ui",
+    "server-driven-ui",
+    "components",
+    "primitives",
+    "tailwind",
+    "signal-forms",
+    "charts",
+    "ui"
+  ],
   "peerDependencies": {
     "@angular/core": ">=19.0.0 <23.0.0",
     "@ng-json-render/core": "^0.0.1"
