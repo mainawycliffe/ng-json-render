@@ -1,3 +1,13 @@
+## 0.0.3 (2026-07-05)
+
+### 🩹 Fixes
+
+- fix the name of the repo ([fd34f2c](https://github.com/mainawycliffe/ng-json-render/commit/fd34f2c))
+
+### ❤️ Thank You
+
+- Maina Wycliffe
+
 ## 0.0.2 (2026-07-04)
 
 ### 🚀 Features
